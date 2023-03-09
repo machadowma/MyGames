@@ -2,18 +2,23 @@ package com.example.mygames;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     public SQLiteDatabase bancoDados;
     ListView listView;
+    FloatingActionButton btnCadastro;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +26,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         listView = (ListView) findViewById(R.id.listView);
+        btnCadastro = (FloatingActionButton) findViewById(R.id.btnCadastro);
+
+        btnCadastro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                abrirTelaCadastro();
+            }
+        });
 
         criarBancoDados();
         // inserirDadosTemp();
@@ -84,6 +97,11 @@ public class MainActivity extends AppCompatActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public void abrirTelaCadastro(){
+        Intent intent = new Intent(this,CadastroActivity.class);
+        startActivity(intent);
     }
 
 }
