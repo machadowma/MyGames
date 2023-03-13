@@ -1,13 +1,16 @@
 package com.example.mygames;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -19,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     public SQLiteDatabase bancoDados;
     ListView listView;
     FloatingActionButton btnCadastro;
+    public ArrayList<Integer> arrayIds;
+    Integer idSelecionado;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +40,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                idSelecionado = arrayIds.get(i);
+                confirmaExcluir();
+                return false;
+            }
+        });
+
         criarBancoDados();
         // inserirDadosTemp();
+        listarDados();
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
         listarDados();
     }
 
@@ -87,11 +107,11 @@ public class MainActivity extends AppCompatActivity {
                     linhas
             );
             listView.setAdapter(meuAdapter);
-            //arrayIds = new ArrayList<>();
+            arrayIds = new ArrayList<>();
             meuCursor.moveToFirst();
             do {
                 linhas.add(meuCursor.getString(0) + " - " + meuCursor.getString(1));
-                //arrayIds.add(meuCursor.getInt(0));
+                arrayIds.add(meuCursor.getInt(0));
             } while(meuCursor.moveToNext());
 
         }catch (Exception e){
@@ -102,6 +122,41 @@ public class MainActivity extends AppCompatActivity {
     public void abrirTelaCadastro(){
         Intent intent = new Intent(this,CadastroActivity.class);
         startActivity(intent);
+    }
+
+
+    public void confirmaExcluir() {
+        AlertDialog.Builder msgBox = new AlertDialog.Builder(MainActivity.this);
+        msgBox.setTitle("Excluir");
+        msgBox.setIcon(android.R.drawable.ic_menu_delete);
+        msgBox.setMessage("Você realmente deseja excluir esse registro?");
+        msgBox.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                deletar();
+                listarDados();
+            }
+        });
+        msgBox.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        msgBox.show();
+    }
+
+    public void deletar(){
+        try{
+            bancoDados = openOrCreateDatabase("mygames", MODE_PRIVATE, null);
+            String sql = "DELETE FROM game WHERE id =?";
+            SQLiteStatement stmt = bancoDados.compileStatement(sql);
+            stmt.bindLong(1, idSelecionado);
+            stmt.executeUpdateDelete();
+            listarDados();
+            bancoDados.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
 }
