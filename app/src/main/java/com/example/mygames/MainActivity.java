@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -45,7 +46,14 @@ public class MainActivity extends AppCompatActivity {
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 idSelecionado = arrayIds.get(i);
                 confirmaExcluir();
-                return false;
+                return true;
+            }
+        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                abrirTelaEditar(i);
             }
         });
 
@@ -121,6 +129,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void abrirTelaCadastro(){
         Intent intent = new Intent(this,CadastroActivity.class);
+        startActivity(intent);
+    }
+
+    public void abrirTelaEditar(Integer posicao){
+        Intent intent = new Intent(this,EditeActivity.class);
+        Integer id = arrayIds.get(posicao);
+        intent.putExtra("id",id);
         startActivity(intent);
     }
 

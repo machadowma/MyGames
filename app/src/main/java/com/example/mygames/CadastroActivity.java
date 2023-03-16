@@ -22,7 +22,7 @@ public class CadastroActivity extends AppCompatActivity {
 
         txtTitle = (EditText) findViewById(R.id.txtTitle);
         txtStudio = (EditText) findViewById(R.id.txtStudio);
-        btnCadastrar = (Button) findViewById(R.id.btnCadastrar);
+        btnCadastrar = (Button) findViewById(R.id.btnEditar);
 
         btnCadastrar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -36,9 +36,10 @@ public class CadastroActivity extends AppCompatActivity {
         if(!TextUtils.isEmpty(txtTitle.getText().toString())){
             try{
                 bancoDados = openOrCreateDatabase("mygames", MODE_PRIVATE, null);
-                String sql = "INSERT INTO game (title) VALUES (?)";
+                String sql = "INSERT INTO game (title,studio) VALUES (?,?)";
                 SQLiteStatement stmt = bancoDados.compileStatement(sql);
                 stmt.bindString(1,txtTitle.getText().toString());
+                stmt.bindString(2,txtStudio.getText().toString());
                 stmt.executeInsert();
                 bancoDados.close();
                 finish();
